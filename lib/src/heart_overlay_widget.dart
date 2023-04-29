@@ -50,10 +50,10 @@ import 'package:flutter/material.dart';
 /// ## Common Errors
 ///
 /// If you get errors like `forces infinite height`/`forces infinite width`
-/// when used in a `Column`, `Row` or `Flex` widget, specify a desired `height`/`width` 
-/// 
-/// OR 
-/// 
+/// when used in a `Column`, `Row` or `Flex` widget, specify a desired `height`/`width`
+///
+/// OR
+///
 /// Wrap the `HeartOverlay` in an `Expanded`/`Flexible` widget.
 /// And if an `Expanded` widget is used, `height`/`width` properites are basically useless.
 ///
