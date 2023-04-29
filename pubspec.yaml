@@ -1,0 +1,20 @@
+name: heart_overlay
+description: The HeartOverlay widget can be used to create a fun and interactive overlay that displays a heart animation when the user taps on the screen.
+version: 1.0.0
+repository: https://github.com/JohnF17/heart_overlay
+screenshots:
+  description: 'Examples of the Heart Overlay Widget'
+  path: example/screenshots/heartoverlay.jpg
+
+environment:
+  sdk: '>=2.19.6 <3.0.0'
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
