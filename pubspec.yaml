@@ -3,8 +3,8 @@ description: The HeartOverlay widget can be used to create a fun and interactive
 version: 1.0.0
 repository: https://github.com/JohnF17/heart_overlay
 screenshots:
-  description: 'Examples of the Heart Overlay Widget'
-  path: example/screenshots/heartoverlay.jpg
+  - description: 'Examples of the Heart Overlay Widget'
+    path: example/screenshots/heartoverlay.jpg
 
 environment:
   sdk: '>=2.19.6 <3.0.0'
