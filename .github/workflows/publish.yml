@@ -12,12 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Flutter
         uses: subosito/flutter-action@v1
         with:
           flutter-version: 'stable'
       - name: Install dependencies
         run: flutter pub get
-      - name: Publish package
-        uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
