@@ -71,6 +71,7 @@ class HeartOverlay extends StatefulWidget {
     this.width,
     this.height,
     this.cacheExtent,
+    this.onPressed,
   });
 
   /// Icon widget that is displayed instead of the heart icon.
@@ -154,6 +155,12 @@ class HeartOverlay extends StatefulWidget {
   /// the better the performance for lower to mid tier devices.
   final int? cacheExtent;
 
+  /// An optional callback that triggers when an icon appears on screen.
+  ///
+  /// Also gives a parameter that holds the number of hearts that have been
+  /// displayed on screen before exceeding the [cacheExtent].
+  final Function(int? numberOfHearts)? onPressed;
+
   @override
   State<HeartOverlay> createState() => _HeartOverlayState();
 }
@@ -196,9 +203,9 @@ class _HeartOverlayState extends State<HeartOverlay> {
     cacheExtent = widget.cacheExtent ?? 35;
   }
 
-  // Define a method to add new hearts to the screen when the user taps on it
+  /// Define a method to add new hearts to the screen when the user taps on it
   void _addHearts(TapDownDetails details) {
-    // If there are already 30 hearts in memory, clear them out to avoid performance issues
+    // If there are already 35 hearts in memory, clear them out to avoid performance issues
     if (_hearts.length >= cacheExtent) {
       _hearts = [];
     }
@@ -212,10 +219,11 @@ class _HeartOverlayState extends State<HeartOverlay> {
             child: _buildHeart(),
           ),
         );
+      widget.onPressed?.call(_hearts.length);
     });
   }
 
-  // Define a method to build a heart using an animation
+  /// Define a method to build a heart using an animation
   Widget _buildHeart() {
     return TweenAnimationBuilder<double>(
       // The Tween defines the range of the animation. Here, it goes from 1 to 0, which means the animation will

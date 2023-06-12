@@ -20,13 +20,15 @@ class MainApp extends StatelessWidget {
           backgroundColor: Colors.cyan,
         ),
         body: Column(
-          children: const [
+          children: [
             Expanded(
               child: HeartOverlay(
-                duration: Duration(seconds: 2),
+                duration: const Duration(seconds: 2),
                 backgroundColor: Colors.lightBlue,
-                height: 200,
-                icon: Icon(
+                onPressed: (numberOfHearts) {
+                  // Do something with the number of hearts or do something whenever the icon appears
+                },
+                icon: const Icon(
                   Icons.abc,
                   color: Colors.purple,
                   size: 100,
