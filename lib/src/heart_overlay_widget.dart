@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// Tap Down Type which can be either [TapDownType.single] or [TapDownType.double]
+enum TapDownType {
+  /// Single tap to start the animation
+  single,
+
+  /// Double tap to start the animation
+  double,
+}
+
 /// A Flutter widget that displays a heart overlay.
 ///
 /// The `HeartOverlay` widget can be used to create a fun and interactive overlay that
@@ -29,7 +38,9 @@ import 'package:flutter/material.dart';
 ///                 color: Colors.cyan,
 ///                 size: 80,
 ///               ),
+///               tapDownType: TapDownType.single,
 ///               verticalOffset: 50,
+///               horizontalOffset: 50,
 ///               duration: Duration(milliseconds: 800),
 ///               decoration: BoxDecoration(
 ///                 borderRadius: BorderRadius.circular(50),
@@ -50,7 +61,9 @@ import 'package:flutter/material.dart';
 /// ## Common Errors
 ///
 /// If you get errors like `forces infinite height`/`forces infinite width`
-/// when used in a `Column`, `Row` or `Flex` widget, specify a desired `height`/`width`
+/// when used in a `Column`, `Row` or `Flex` widget, 
+/// 
+/// Specify a desired `height`/`width`
 ///
 /// OR
 ///
@@ -72,6 +85,7 @@ class HeartOverlay extends StatefulWidget {
     this.height,
     this.cacheExtent,
     this.onPressed,
+    this.tapDownType,
   });
 
   /// Icon widget that is displayed instead of the heart icon.
@@ -106,7 +120,7 @@ class HeartOverlay extends StatefulWidget {
 
   /// A widget to be used as the background for the overlay.
   ///
-  /// If you have clickable events in this widget they may not work. (as of V1.0.0)
+  /// More like the child of the heart overlay.
   final Widget? backgroundWidget;
 
   /// Duration of the [icon] animation to stay on the screen.
@@ -149,7 +163,7 @@ class HeartOverlay extends StatefulWidget {
 
   /// The amount of icons that can be stored before reset.
   ///
-  /// Defaults to 35.
+  /// Defaults to 20.
   ///
   /// Even though this is a `very lightweight package`, the lower the cache extent is,
   /// the better the performance for lower to mid tier devices.
@@ -161,17 +175,26 @@ class HeartOverlay extends StatefulWidget {
   /// displayed on screen before exceeding the [cacheExtent].
   final Function(int? numberOfHearts)? onPressed;
 
+  /// An optional parameter that sets the animation trigger type.
+  ///
+  /// It can be either [TapDownType.single] or [TapDownType.double].
+  ///
+  /// Defaults to [TapDownType.single]
+  final TapDownType? tapDownType;
+
   @override
   State<HeartOverlay> createState() => _HeartOverlayState();
 }
 
+/// State of the HeartOverlay widget
 class _HeartOverlayState extends State<HeartOverlay> {
-  // Local variables for the child's horizontal offset, vertical offset, and decoration
+  // Local variables
   late double horizontalOffset;
   late double verticalOffset;
   late BoxDecoration decoration;
   late double size;
   late int cacheExtent;
+  late TapDownType tapDownType;
 
   List<Widget> _hearts = [];
 
@@ -200,7 +223,11 @@ class _HeartOverlayState extends State<HeartOverlay> {
     decoration = widget.decoration?.copyWith(color: color) ??
         BoxDecoration(color: color);
 
-    cacheExtent = widget.cacheExtent ?? 35;
+    // Set the cache extent
+    cacheExtent = widget.cacheExtent ?? 20;
+
+    // Set the tap down type
+    tapDownType = widget.tapDownType ?? TapDownType.single;
   }
 
   /// Define a method to add new hearts to the screen when the user taps on it
@@ -240,6 +267,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
       builder: (BuildContext context, double value, Widget? child) {
         // The offset of the transformed widget. It moves the heart icon up as it becomes smaller.
         final offset = Offset(0, (100 * value) - (verticalOffset * 2));
+
         return Transform.translate(
           offset: offset,
           // The Opacity widget fades out the heart icon as it becomes smaller.
@@ -258,7 +286,8 @@ class _HeartOverlayState extends State<HeartOverlay> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: _addHearts,
+      onTapDown: tapDownType == TapDownType.single ? _addHearts : null,
+      onDoubleTapDown: tapDownType == TapDownType.double ? _addHearts : null,
       child: Container(
         decoration: decoration,
         width: widget.width ?? double.infinity,

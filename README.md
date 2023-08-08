@@ -12,7 +12,7 @@ _A screen record will be provided soon_
 
 ## Features 🤩
 
-- Displays a heart-shaped icon overlaid on top of eachother when tapped in quick succession while shrinking and fading at the same time just like social media apps.💖
+- Displays a heart-shaped icon overlaid on top of eachother when tapped in quick succession while shrinking and fading at the same time just like social media apps (i.e Tik tok, Instagram).💖
 - The displayed icon can be styled however you like.🤗
 - The overlay background can be customized however you like.✏️
 
@@ -39,35 +39,46 @@ More customizability:
           Icons.abc,
           color: Colors.cyan,
         ),
-        verticalOffset: 50,  // Vertical Offset from tap position
-        horizontalOffset: 50,  // Horizontal Offset from tap position
+        verticalOffset: 10,  // Vertical Offset from tap position
+        horizontalOffset: 10,  // Horizontal Offset from tap position
         duration: Duration(milliseconds: 800), // Icon to stay on screen duration 
         backgroundWidget: Image.asset('assets/image.png'), // Overlay container background
+        tapDownType: TapDownType.double, // The animation trigger type
+        cacheExtent: 10, // The cache extent
+        onPressed: (numberOfHearts) {
+            // Do something with the number of hearts shown or do something whenever the icon appears
+        },
     ),
 ```
 
 ## Planning to add ➕
 
-- [ ] Support for displaying any kind of widget instead of just `icon`s.
-- [ ] Support for light weight animated Icons that have splashes (might require a dependency).
-- [ ] Support for icons to be vertically spaced out when created at about the same position.
-  - Probably a variable called `verticalSpaceBetweenIcons`.
+- Check out the [CHANGELOG](example/screenshots/heartoverlay.jpg) for next planned updates.
 
 ## Common Errors 🐛
 
  If you get errors like `forces infinite height`/`forces infinite width`
- when used in a `Column`, `Row` or `Flex` widget, specify a desired `height`/`width` 
+ when used in a `Column`, `Row` or `Flex` widget:
+ 
+ Specify a desired `height`/`width` 
  
  OR 
  
  Wrap the `HeartOverlay` in an `Expanded`/`Flexible` widget.
+
  And if an `Expanded` widget is used, `height`/`width` properites are basically useless.
 
 
 ## Additional information ℹ️
 
-This package is available on [GitHub](https://github.com/JohnF17/heart_overlay).📃
+This package is available on [GitHub](https://github.com/JohnF17/heart_overlay) and [Pub.dev](https://pub.dev/packages/heart_overlay). 📃
 
 If you encounter any issues or would like to contribute to the package, feel free to open a [GitHub issue](https://github.com/JohnF17/heart_overlay/issues). Contributions are welcome and appreciated.🙏
 
-A like👍 here and a star⭐ on gihub would be much appreciated. 🤗
+Remember to leave a like👍 here and a star⭐ on gihub to help expose useful packages like these to others and that would be much appreciated. Thank you! 🤗
+
+<!-- ### Other Packages
+
+- Project Board (Comming Soon) 
+ 
+-->
