@@ -61,8 +61,8 @@ enum TapDownType {
 /// ## Common Errors
 ///
 /// If you get errors like `forces infinite height`/`forces infinite width`
-/// when used in a `Column`, `Row` or `Flex` widget, 
-/// 
+/// when used in a `Column`, `Row` or `Flex` widget,
+///
 /// Specify a desired `height`/`width`
 ///
 /// OR
