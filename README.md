@@ -53,7 +53,7 @@ More customizability:
 
 ## Planning to add ➕
 
-- Check out the [CHANGELOG](example/screenshots/heartoverlay.jpg) for next planned updates.
+- Check out the [CHANGELOG](CHANGELOG.md) for next planned updates.
 
 ## Common Errors 🐛
 
