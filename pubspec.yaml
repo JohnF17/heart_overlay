@@ -1,10 +1,10 @@
 name: heart_overlay
 description: The HeartOverlay widget can be used to create a fun and interactive overlay that displays a heart animation when the user taps on the screen.
-version: 1.1.0
+version: 1.2.0
 repository: https://github.com/JohnF17/heart_overlay
 screenshots:
   - description: 'Examples of the Heart Overlay Widget'
-    path: example/screenshots/heartoverlay.jpg
+    path: example/screenshots/icon_overlay.jpg
 
 environment:
   sdk: '>=2.19.6 <4.0.0'

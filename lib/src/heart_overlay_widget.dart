@@ -14,9 +14,9 @@ enum TapDownType {
 /// The `HeartOverlay` widget can be used to create a fun and interactive overlay that
 /// displays a heart animation when the user taps on the screen. It can be used as a
 /// decorative element for apps that require a playful or romantic touch, such as dating
-/// apps, greeting card apps, or social media apps.
+/// apps, greeting card apps, or social media apps like Tik Tok, Instagram etc.
 ///
-/// The `HeartOverlay` widget allows you to customize the size, position, color, and
+/// The `HeartOverlay` widget allows you to customize the size, color, and
 /// animation duration of the heart, as well as the widget that serves as the background.
 ///
 /// To use the `HeartOverlay` widget, simply place the widget anywhere you want to and
@@ -80,7 +80,8 @@ class HeartOverlay extends StatefulWidget {
     this.duration,
     this.backgroundColor,
     this.decoration,
-    this.backgroundWidget,
+    @Deprecated('Use child instead') this.backgroundWidget,
+    this.child,
     this.width,
     this.height,
     this.cacheExtent,
@@ -88,7 +89,13 @@ class HeartOverlay extends StatefulWidget {
     this.tapDownType,
   });
 
-  /// Icon widget that is displayed instead of the heart icon.
+  /// Icon widget that is displayed instead of the default heart icon.
+  ///
+  /// Icon can be any kind of widget.
+  ///
+  /// NOTE: You will have to use [verticalOffset] and [horizontalOffset]
+  /// to accurately position the icon widget on the tap position
+  /// if its not of type [Icon]
   ///
   /// Defaults to
   /// ```
@@ -98,7 +105,7 @@ class HeartOverlay extends StatefulWidget {
   ///     size: size,
   ///   )
   /// ```
-  final Icon? icon;
+  final Widget? icon;
 
   /// Width of the overlay board.
   ///
@@ -120,8 +127,11 @@ class HeartOverlay extends StatefulWidget {
 
   /// A widget to be used as the background for the overlay.
   ///
-  /// More like the child of the heart overlay.
+  /// DEPRECATED - Use child instead
   final Widget? backgroundWidget;
+
+  /// A widget to be used as the background for the overlay.
+  final Widget? child;
 
   /// Duration of the [icon] animation to stay on the screen.
   final Duration? duration;
@@ -130,9 +140,9 @@ class HeartOverlay extends StatefulWidget {
   ///
   /// Defaults to half of the icon size - meaning the exact position the tap was registered.
   ///
-  /// If horizontal offset is positive, the [icon] goes to the left.
+  /// If horizontal offset is positive, the [icon] goes to the right.
   ///
-  /// If horizontal offset is negative, the [icon] goes to the right.
+  /// If horizontal offset is negative, the [icon] goes to the left.
   final double? horizontalOffset;
 
   /// Vertical offset of the heart/[icon] position.
@@ -147,17 +157,19 @@ class HeartOverlay extends StatefulWidget {
   /// Size of the heart but `can be overridden` by size given to the [icon].
   /// So it should not be provided!
   ///
-  /// Defaults to 80.
+  /// Defaults to 80 if [icon] is any other widget type including [Icon]s.
+  ///
+  /// Defaults to 50 if [icon] is a [Text] widget.
   final double? size;
 
   /// Background color of the overlay widget.
   ///
-  /// `Can be overriden` by [backgroundWidget] if its not transparent or null.
+  /// `Can be overriden` by [child] if its not transparent or null.
   final Color? backgroundColor;
 
   /// Decoration property of the overlay widget.
   ///
-  /// `Can be overriden` by [backgroundWidget] if its not transparent or null.
+  /// `Can be overriden` by [child] if its not transparent or null.
   /// `Can be overriden` by [backgroundColor] if its not transparent or null.
   final BoxDecoration? decoration;
 
@@ -193,8 +205,10 @@ class _HeartOverlayState extends State<HeartOverlay> {
   late double verticalOffset;
   late BoxDecoration decoration;
   late double size;
+  late Widget child;
   late int cacheExtent;
   late TapDownType tapDownType;
+  late Widget icon;
 
   List<Widget> _hearts = [];
 
@@ -203,17 +217,38 @@ class _HeartOverlayState extends State<HeartOverlay> {
     super.initState();
     assert(
       () {
-        if (widget.icon != null && widget.size != null) {
+        if ((widget.icon is Icon && widget.icon != null) &&
+            widget.size != null) {
           throw 'If icon is not null, size should not be provided through this parameter instead size has to be provided within the icon widget itself!';
         }
         return true;
       }(),
     );
+    icon = widget.icon ??
+        Icon(
+          Icons.favorite,
+          color: Colors.red,
+          size: size,
+        );
 
     // Set the size, vertical offset, and horizontal offset of the heart/child based on the passed-in values or defaults
-    size = widget.icon?.size ?? widget.size ?? 80;
+    if (widget.icon is Icon) {
+      size = (widget.icon as Icon?)?.size ?? widget.size ?? 80;
+    } else if (widget.icon is Text) {
+      size = widget.size ?? (widget.icon as Text?)?.style?.fontSize ?? 50;
+      TextStyle textStyle =
+          (widget.icon as Text?)?.style?.copyWith(fontSize: size) ??
+              TextStyle(fontSize: size);
+      icon = DefaultTextStyle(
+        style: textStyle,
+        child: icon,
+      );
+    } else {
+      size = widget.size ?? 80;
+    }
+
     verticalOffset = (size / 2) + (widget.verticalOffset ?? 0);
-    horizontalOffset = (size / 2) + (widget.horizontalOffset ?? 0);
+    horizontalOffset = (size / 2) - (widget.horizontalOffset ?? 0);
 
     // Determine the decoration of the heart based on the passed-in values or defaults
     Color color = widget.decoration?.color ??
@@ -228,6 +263,9 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
     // Set the tap down type
     tapDownType = widget.tapDownType ?? TapDownType.single;
+
+    // Set the child
+    child = widget.child ?? widget.backgroundWidget ?? const SizedBox.shrink();
   }
 
   /// Define a method to add new hearts to the screen when the user taps on it
@@ -258,12 +296,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
       tween: Tween(begin: 1, end: 0),
       duration: widget.duration ?? const Duration(seconds: 1),
       // The child widget to animate. If none is provided, an Icon with the favorite icon and a red color will be used.
-      child: widget.icon ??
-          Icon(
-            Icons.favorite,
-            color: Colors.red,
-            size: size,
-          ),
+      child: icon,
       builder: (BuildContext context, double value, Widget? child) {
         // The offset of the transformed widget. It moves the heart icon up as it becomes smaller.
         final offset = Offset(0, (100 * value) - (verticalOffset * 2));
@@ -296,7 +329,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
           children: [
             // Show the provided Background widget if null show nothing
             Positioned.fill(
-              child: widget.backgroundWidget ?? const SizedBox.shrink(),
+              child: child,
             ),
             Stack(
               children: _hearts,
