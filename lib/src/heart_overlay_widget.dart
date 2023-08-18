@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:heart_overlay/src/utils/splash_animation_details.dart';
+import 'package:heart_overlay/src/widgets/splash_widget.dart';
 
 /// Tap Down Type which can be either [TapDownType.single] or [TapDownType.double]
 enum TapDownType {
@@ -73,20 +75,23 @@ enum TapDownType {
 class HeartOverlay extends StatefulWidget {
   const HeartOverlay({
     super.key,
-    this.verticalOffset,
-    this.horizontalOffset,
-    this.size,
     this.icon,
-    this.duration,
-    this.backgroundColor,
-    this.decoration,
     @Deprecated('Use child instead') this.backgroundWidget,
     this.child,
+    this.size,
     this.width,
     this.height,
-    this.cacheExtent,
+    this.verticalOffset,
+    this.horizontalOffset,
     this.onPressed,
-    this.tapDownType,
+    this.backgroundColor,
+    this.decoration,
+    this.cacheExtent,
+    this.duration = const Duration(seconds: 1),
+    this.tapDownType = TapDownType.single,
+    this.splashAnimationDetails = const SplashAnimationDetails(
+      enableSplash: false,
+    ),
   });
 
   /// Icon widget that is displayed instead of the default heart icon.
@@ -134,7 +139,7 @@ class HeartOverlay extends StatefulWidget {
   final Widget? child;
 
   /// Duration of the [icon] animation to stay on the screen.
-  final Duration? duration;
+  final Duration duration;
 
   /// Horizontal offset of the heart/[icon] position.
   ///
@@ -192,7 +197,12 @@ class HeartOverlay extends StatefulWidget {
   /// It can be either [TapDownType.single] or [TapDownType.double].
   ///
   /// Defaults to [TapDownType.single]
-  final TapDownType? tapDownType;
+  final TapDownType tapDownType;
+
+  /// An optional parameter to set splash animation details.
+  ///
+  /// Splashes are turned off by default.
+  final SplashAnimationDetails splashAnimationDetails;
 
   @override
   State<HeartOverlay> createState() => _HeartOverlayState();
@@ -207,7 +217,6 @@ class _HeartOverlayState extends State<HeartOverlay> {
   late double size;
   late Widget child;
   late int cacheExtent;
-  late TapDownType tapDownType;
   late Widget icon;
 
   List<Widget> _hearts = [];
@@ -224,6 +233,9 @@ class _HeartOverlayState extends State<HeartOverlay> {
         return true;
       }(),
     );
+
+    size = widget.size ?? 80;
+
     icon = widget.icon ??
         Icon(
           Icons.favorite,
@@ -234,6 +246,16 @@ class _HeartOverlayState extends State<HeartOverlay> {
     // Set the size, vertical offset, and horizontal offset of the heart/child based on the passed-in values or defaults
     if (widget.icon is Icon) {
       size = (widget.icon as Icon?)?.size ?? widget.size ?? 80;
+      if (widget.splashAnimationDetails.enableSplash) {
+        icon = SplashWidget(
+          size: size,
+          bubblesColor: widget.splashAnimationDetails.bubblesColor,
+          animationDuration: widget.splashAnimationDetails.animationDuration,
+          circleSize: widget.splashAnimationDetails.circleSize,
+          bubblesSize: widget.splashAnimationDetails.bubblesSize,
+          child: icon,
+        );
+      }
     } else if (widget.icon is Text) {
       size = widget.size ?? (widget.icon as Text?)?.style?.fontSize ?? 50;
       TextStyle textStyle =
@@ -260,9 +282,6 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
     // Set the cache extent
     cacheExtent = widget.cacheExtent ?? 20;
-
-    // Set the tap down type
-    tapDownType = widget.tapDownType ?? TapDownType.single;
 
     // Set the child
     child = widget.child ?? widget.backgroundWidget ?? const SizedBox.shrink();
@@ -294,7 +313,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
       // The Tween defines the range of the animation. Here, it goes from 1 to 0, which means the animation will
       // start with the size of the heart being 100% and end with 0%, meaning the heart will disappear.
       tween: Tween(begin: 1, end: 0),
-      duration: widget.duration ?? const Duration(seconds: 1),
+      duration: widget.duration,
       // The child widget to animate. If none is provided, an Icon with the favorite icon and a red color will be used.
       child: icon,
       builder: (BuildContext context, double value, Widget? child) {
@@ -319,8 +338,9 @@ class _HeartOverlayState extends State<HeartOverlay> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: tapDownType == TapDownType.single ? _addHearts : null,
-      onDoubleTapDown: tapDownType == TapDownType.double ? _addHearts : null,
+      onTapDown: widget.tapDownType == TapDownType.single ? _addHearts : null,
+      onDoubleTapDown:
+          widget.tapDownType == TapDownType.double ? _addHearts : null,
       child: Container(
         decoration: decoration,
         width: widget.width ?? double.infinity,

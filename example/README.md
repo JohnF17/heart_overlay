@@ -1,3 +1,3 @@
-# example
+# Example for the HeartOverlay widget
 
-A new Flutter project.
+This folder contains an example for the HeartOverlay widget.

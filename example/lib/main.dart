@@ -36,49 +36,56 @@ class HeartOverlayTestWidget extends StatelessWidget {
         children: [
           Expanded(
             child: HeartOverlay(
-              duration: const Duration(seconds: 2),
-              backgroundColor: Colors.white10,
+              duration: const Duration(seconds: 5),
+              backgroundColor: Colors.black,
               tapDownType: TapDownType.single,
-              verticalOffset: 20,
-              horizontalOffset: -100,
+              // verticalOffset: 20,
+              // horizontalOffset: -100,
               cacheExtent: 30,
+              splashAnimationDetails: const SplashAnimationDetails(
+                enableSplash: true,
+                animationDuration: Duration(seconds: 3),
+              ),
               icon: const Icon(
-                Icons.abc,
-                color: Colors.purple,
+                Icons.favorite,
+                color: Colors.redAccent,
                 size: 100,
               ),
               onPressed: (numberOfHearts) {
                 // Do something with the number of hearts or do something whenever the icon appears
               },
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Tap here'),
-                ),
-              ),
+              // child: Center(
+              //   child: ElevatedButton(
+              //     onPressed: () {},
+              //     child: const Text('Tap here'),
+              //   ),
+              // ),
             ),
           ),
-          Expanded(
-            child: HeartOverlay(
-              duration: const Duration(seconds: 10),
-              backgroundColor: Colors.black,
-              tapDownType: TapDownType.single,
-              icon: const Text('✌️'),
-              size: 60,
-              // Sometimes it might be nesessary to add vertical and horizontal offset
-              verticalOffset: 20,
-              horizontalOffset: -10,
-              onPressed: (numberOfHearts) {
-                // Do something with the number of hearts or do something whenever the icon appears
-              },
-              child: Center(
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text('Tap here'),
-                ),
-              ),
-            ),
-          ),
+          // Expanded(
+          //   child: HeartOverlay(
+          //     duration: const Duration(seconds: 2),
+          //     backgroundColor: Colors.white10,
+          //     tapDownType: TapDownType.single,
+          //     icon: const Text('✌️'),
+          //     splashAnimationDetails: const SplashAnimationDetails(
+          //       enableSplash: true,
+          //     ),
+          //     size: 60,
+          //     // Sometimes it might be nesessary to add vertical and horizontal offset
+          //     verticalOffset: 20,
+          //     horizontalOffset: -10,
+          //     onPressed: (numberOfHearts) {
+          //       // Do something with the number of hearts or do something whenever the icon appears
+          //     },
+          //     child: Center(
+          //       child: ElevatedButton(
+          //         onPressed: () {},
+          //         child: const Text('Tap here'),
+          //       ),
+          //     ),
+          //   ),
+          // ),
         ],
       ),
     );

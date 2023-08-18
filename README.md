@@ -6,11 +6,7 @@
 
 The `HeartOverlay` widget can be used to create a fun and interactive overlay that displays a heart animation when the user taps on the screen. It can be used as a decorative element for apps that require a playful or romantic touch, such as dating apps, greeting card apps, or social media apps.
 
-<!-- ![screenshot of the app](example/screenshots/icon_overlay.jpg) -->
-<div style="width: 100%; overflow-x: auto;">
-   <img src="example/screenshots/icon_overlay.jpg" alt="Screenshot of the app" style="flex: 1; margin-right: 10px; max-width: 100%; max-height: 400px;">
-</div>
-
+![screenshot of the app](example/screenshots/icon_overlay.jpg)
 
 _A screen record will be provided soon_
 
@@ -31,12 +27,14 @@ Then import
 
 ## Usage 🧐
 
-Simple usage: 
+**Simple usage:**
 ```dart
     HeartOverlay();
 ```
 
-More customizability: (With Icon)
+**More customizability:**
+
+_With Icon:_
 ```dart
     HeartOverlay(
         icon: Icon(
@@ -49,6 +47,7 @@ More customizability: (With Icon)
         duration: Duration(milliseconds: 800), // Icon to stay on screen duration 
         tapDownType: TapDownType.double, // The animation trigger type
         cacheExtent: 10, // The cache extent
+        enableSplash: true, // Enables a light weight splash animation to the icon provided
         onPressed: (numberOfHearts) {
             // Do something with the number of hearts shown or do something whenever the icon appears
         },
@@ -58,7 +57,7 @@ More customizability: (With Icon)
 
 ### or 
 
-(With any Widget)
+_With any Widget:_
 ```dart
     HeartOverlay(
         icon: const Text('✌️'),
@@ -69,6 +68,7 @@ More customizability: (With Icon)
         duration: Duration(milliseconds: 800), // Icon to stay on screen duration 
         tapDownType: TapDownType.single, // The animation trigger type
         cacheExtent: 10, // The cache extent
+        enableSplash: true, // Enables a light weight splash animation to the icon provided
         onPressed: (numberOfHearts) {
             // Do something with the number of hearts shown or do something whenever the icon appears
         },
@@ -82,22 +82,24 @@ More customizability: (With Icon)
 
 ## Common Errors and Issues🐛
 
-### Errors
+**Errors**
 
  If you get errors like `forces infinite height`/`forces infinite width`
  when used in a `Column`, `Row` or `Flex` widget:
  
- Specify a desired `height`/`width` 
+ Specify a desired `height`/`width` to the `HeartOverlay` widget.
  
  OR 
  
  Wrap the `HeartOverlay` in an `Expanded`/`Flexible` widget.
 
- And if an `Expanded` widget is used, `height`/`width` properites are basically useless.
+ Note that: And if an `Expanded`/`Flexible` widget is used, `height`/`width` properites are basically useless.
 
-### Issues
+**Issues**
 
-As of `HeartOverlay Version: 1.2.0`, *Widget support* is available as shown [here](example/screenshots/widget_overlay.jpg), although you might have to fiddle with the _vertical_ and _horizontal_ offsets to precisely align the widget to its tap position.
+As of `HeartOverlay Version: 1.2.0`, *Widget support* is available as shown [here](example/screenshots/widget_overlay.jpg), though you might have to fiddle with the _vertical_ and _horizontal_ offsets to precisely align the widget to its tap position.
+
+As of `HeartOverlay Version: 1.3.0`, *Splash support* is available as shown [here](example/screenshots/splash_overlay.jpg), though it can only support [Icon] types.
 
 ## Additional information ℹ️
 
