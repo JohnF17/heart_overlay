@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:heart_overlay/src/utils/circle_color.dart';
 
 class SplashAnimationDetails {
   final bool enableSplash;
@@ -20,4 +19,20 @@ class SplashAnimationDetails {
       dotLastColor: Color(0xFFF44336),
     ),
   });
+}
+
+class BubblesColor {
+  const BubblesColor({
+    required this.dotPrimaryColor,
+    required this.dotSecondaryColor,
+    this.dotThirdColor,
+    this.dotLastColor,
+  });
+  final Color dotPrimaryColor;
+  final Color dotSecondaryColor;
+  final Color? dotThirdColor;
+  final Color? dotLastColor;
+  Color get dotThirdColorReal => dotThirdColor ?? dotPrimaryColor;
+
+  Color get dotLastColorReal => dotLastColor ?? dotSecondaryColor;
 }

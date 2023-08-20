@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heart_overlay/src/painter/bubbles_painter.dart';
-import 'package:heart_overlay/src/utils/circle_color.dart';
+import 'package:heart_overlay/src/utils/splash_animation_details.dart';
 
 /// Splash widget is a widget that wraps your widget with a splash effect
 class SplashWidget extends StatefulWidget {

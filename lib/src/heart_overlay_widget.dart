@@ -78,11 +78,13 @@ class HeartOverlay extends StatefulWidget {
     this.icon,
     @Deprecated('Use child instead') this.backgroundWidget,
     this.child,
+    this.controller,
     this.size,
     this.width,
     this.height,
     this.verticalOffset,
     this.horizontalOffset,
+    this.enableGestures = true,
     this.onPressed,
     this.backgroundColor,
     this.decoration,
@@ -111,6 +113,10 @@ class HeartOverlay extends StatefulWidget {
   ///   )
   /// ```
   final Widget? icon;
+
+  /// An optional controller that does not need to be disposed which is simply
+  /// used to control and get information about the [HeartOverlay].
+  final HeartOverlayController? controller;
 
   /// Width of the overlay board.
   ///
@@ -159,7 +165,7 @@ class HeartOverlay extends StatefulWidget {
   /// If vertical offset is negative, the [icon] goes down.
   final double? verticalOffset;
 
-  /// Size of the heart but `can be overridden` by size given to the [icon].
+  /// Size of the icon but `can be overridden` by size given to the [icon].
   /// So it should not be provided!
   ///
   /// Defaults to 80 if [icon] is any other widget type including [Icon]s.
@@ -201,8 +207,15 @@ class HeartOverlay extends StatefulWidget {
 
   /// An optional parameter to set splash animation details.
   ///
+  /// Note That: Splashes only work if the [icon] is of type [Icon].
+  ///
   /// Splashes are turned off by default.
   final SplashAnimationDetails splashAnimationDetails;
+
+  /// An optional parameter to enable or diable tap gestures.
+  ///
+  /// Defaults to true.
+  final bool enableGestures;
 
   @override
   State<HeartOverlay> createState() => _HeartOverlayState();
@@ -218,6 +231,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
   late Widget child;
   late int cacheExtent;
   late Widget icon;
+  late bool showGesture;
 
   List<Widget> _hearts = [];
 
@@ -243,7 +257,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
           size: size,
         );
 
-    // Set the size, vertical offset, and horizontal offset of the heart/child based on the passed-in values or defaults
+    // Set the size, vertical offset, and horizontal offset of the heart based on the passed-in values or defaults
     if (widget.icon is Icon) {
       size = (widget.icon as Icon?)?.size ?? widget.size ?? 80;
       if (widget.splashAnimationDetails.enableSplash) {
@@ -272,7 +286,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
     verticalOffset = (size / 2) + (widget.verticalOffset ?? 0);
     horizontalOffset = (size / 2) - (widget.horizontalOffset ?? 0);
 
-    // Determine the decoration of the heart based on the passed-in values or defaults
+    // Determine the decoration of the icon based on the passed-in values or defaults
     Color color = widget.decoration?.color ??
         widget.backgroundColor ??
         Colors.transparent;
@@ -283,46 +297,65 @@ class _HeartOverlayState extends State<HeartOverlay> {
     // Set the cache extent
     cacheExtent = widget.cacheExtent ?? 20;
 
+    // Set gesture
+    showGesture = widget.enableGestures;
+
     // Set the child
     child = widget.child ?? widget.backgroundWidget ?? const SizedBox.shrink();
+
+    // Initialize Controller
+    widget.controller?._initialize(
+      size: size,
+      addItem: _addItem,
+      height: widget.height,
+      width: widget.width,
+      changeGesture: changeGesture,
+    );
   }
 
-  /// Define a method to add new hearts to the screen when the user taps on it
-  void _addHearts(TapDownDetails details) {
-    // If there are already 35 hearts in memory, clear them out to avoid performance issues
+  void changeGesture(bool enabled) {
+    setState(() {
+      showGesture = enabled;
+    });
+  }
+
+  /// Define a method to add new items to the screen when the user taps on it
+  void _addItem(TapDownDetails details) {
+    // If there are already 20 items or [cacheExtent] amount of items in memory,
+    // clear them out to avoid performance issues
     if (_hearts.length >= cacheExtent) {
-      _hearts = [];
+      _hearts.clear();
     }
-    // Add a new heart to the list of hearts on the screen
+    // Add a new icon to the list of hearts on the screen
     setState(() {
       _hearts = List.from(_hearts)
         ..add(
           Positioned(
             left: details.localPosition.dx - horizontalOffset,
             top: details.localPosition.dy - verticalOffset,
-            child: _buildHeart(),
+            child: _buildItem(),
           ),
         );
       widget.onPressed?.call(_hearts.length);
     });
   }
 
-  /// Define a method to build a heart using an animation
-  Widget _buildHeart() {
+  /// Define a method to build an icon using an animation
+  Widget _buildItem() {
     return TweenAnimationBuilder<double>(
       // The Tween defines the range of the animation. Here, it goes from 1 to 0, which means the animation will
-      // start with the size of the heart being 100% and end with 0%, meaning the heart will disappear.
+      // start with the size of the icon being 100% and end with 0%, meaning the icon will disappear.
       tween: Tween(begin: 1, end: 0),
       duration: widget.duration,
-      // The child widget to animate. If none is provided, an Icon with the favorite icon and a red color will be used.
+      // The child widget to animate. If none is provided, an [Icon] with the favorite icon and a red color will be used.
       child: icon,
       builder: (BuildContext context, double value, Widget? child) {
-        // The offset of the transformed widget. It moves the heart icon up as it becomes smaller.
+        // The offset of the transformed widget. It moves the icon icon up as it becomes smaller.
         final offset = Offset(0, (100 * value) - (verticalOffset * 2));
 
         return Transform.translate(
           offset: offset,
-          // The Opacity widget fades out the heart icon as it becomes smaller.
+          // The Opacity widget fades out the icon as it becomes smaller.
           child: Opacity(
             opacity: value,
             child: Transform.scale(
@@ -338,9 +371,12 @@ class _HeartOverlayState extends State<HeartOverlay> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTapDown: widget.tapDownType == TapDownType.single ? _addHearts : null,
-      onDoubleTapDown:
-          widget.tapDownType == TapDownType.double ? _addHearts : null,
+      onTapDown: (showGesture && widget.tapDownType == TapDownType.single)
+          ? _addItem
+          : null,
+      onDoubleTapDown: (showGesture && widget.tapDownType == TapDownType.double)
+          ? _addItem
+          : null,
       child: Container(
         decoration: decoration,
         width: widget.width ?? double.infinity,
@@ -358,5 +394,57 @@ class _HeartOverlayState extends State<HeartOverlay> {
         ),
       ),
     );
+  }
+}
+
+/// A simple controller for the [HeartOverlay] widget.
+class HeartOverlayController {
+  late Function(TapDownDetails tapDownDetails) _addItem;
+  late Function(bool value) _changeGesture;
+  late double _size;
+  double? _height, _width;
+
+  /// Method used to progamatically show the icon at a desired offset
+  void showIcon({required Offset offset}) {
+    _addItem.call(
+      TapDownDetails(
+        localPosition: offset,
+      ),
+    );
+  }
+
+  /// Method used to get icon size
+  double getSize() => _size;
+
+  /// Method used to get the [HeartOverlay]'s height
+  double? getHeight() => _height;
+
+  /// Method used to get the [HeartOverlay]'s width
+  double? getWidth() => _width;
+
+  /// Enable or disable gestures
+  void setGesture({required bool enabled}) => _changeGesture(enabled);
+
+  /// Method that returns the center of the screen offset
+  Offset getCenterScreenOffset(BuildContext context) {
+    Size screenSize = MediaQuery.of(context).size;
+    double centerX = screenSize.width / 2;
+    double centerY = screenSize.height / 2;
+    return Offset(centerX, centerY);
+  }
+
+  /// Private method to link the controller to the [HeartOverlay] widget
+  void _initialize({
+    required Function(TapDownDetails tapDownDetails) addItem,
+    required Function(bool value) changeGesture,
+    required double size,
+    required double? height,
+    required double? width,
+  }) {
+    _addItem = addItem;
+    _size = size;
+    _height = height;
+    _width = width;
+    _changeGesture = changeGesture;
   }
 }

@@ -42,12 +42,16 @@ _With Icon:_
           color: Colors.cyan,
           size: 40,
         ),
+        controller: heartOverlayController, // [HeartOverlayController] - check out the example to see how it's used
         verticalOffset: 10,  // Vertical Offset from tap position
         horizontalOffset: 10,  // Horizontal Offset from tap position
         duration: Duration(milliseconds: 800), // Icon to stay on screen duration 
         tapDownType: TapDownType.double, // The animation trigger type
         cacheExtent: 10, // The cache extent
-        enableSplash: true, // Enables a light weight splash animation to the icon provided
+        splashAnimationDetails: const SplashAnimationDetails(
+            enableSplash: true, // Enables a light weight splash animation to the icon provided
+            animationDuration: Duration(seconds: 3), // Animation duration of the splash icon
+        ), 
         onPressed: (numberOfHearts) {
             // Do something with the number of hearts shown or do something whenever the icon appears
         },
@@ -62,13 +66,13 @@ _With any Widget:_
     HeartOverlay(
         icon: const Text('✌️'),
         size: 60,
+        controller: heartOverlayController, // [HeartOverlayController] - check out the example to see how it's used
         // It might be nesessary to add vertical and horizontal offset when using other types of widget instead of [Icon]s to accurately position the widgets
         verticalOffset: 20,  // Vertical Offset from tap position
         horizontalOffset: -10,  // Horizontal Offset from tap position
         duration: Duration(milliseconds: 800), // Icon to stay on screen duration 
         tapDownType: TapDownType.single, // The animation trigger type
         cacheExtent: 10, // The cache extent
-        enableSplash: true, // Enables a light weight splash animation to the icon provided
         onPressed: (numberOfHearts) {
             // Do something with the number of hearts shown or do something whenever the icon appears
         },
@@ -76,13 +80,15 @@ _With any Widget:_
     ),
 ```
 
+- Check out the [example](example/lib/main.dart) for a more detailed example
+
 ## Planning to add ➕
 
 - Check out the [CHANGELOG](CHANGELOG.md) for next planned updates.
 
 ## Common Errors and Issues🐛
 
-**Errors**
+### Errors
 
  If you get errors like `forces infinite height`/`forces infinite width`
  when used in a `Column`, `Row` or `Flex` widget:
@@ -95,7 +101,7 @@ _With any Widget:_
 
  Note that: And if an `Expanded`/`Flexible` widget is used, `height`/`width` properites are basically useless.
 
-**Issues**
+### Issues
 
 As of `HeartOverlay Version: 1.2.0`, *Widget support* is available as shown [here](example/screenshots/widget_overlay.jpg), though you might have to fiddle with the _vertical_ and _horizontal_ offsets to precisely align the widget to its tap position.
 
