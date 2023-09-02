@@ -80,7 +80,7 @@ _With any Widget:_
     ),
 ```
 
-- Check out the [example](example/lib/main.dart) for a more detailed example
+- Check out the [example](example/lib/main.dart) for more detail.
 
 ## Planning to add ➕
 

@@ -257,31 +257,8 @@ class _HeartOverlayState extends State<HeartOverlay> {
           size: size,
         );
 
-    // Set the size, vertical offset, and horizontal offset of the heart based on the passed-in values or defaults
-    if (widget.icon is Icon) {
-      size = (widget.icon as Icon?)?.size ?? widget.size ?? 80;
-      if (widget.splashAnimationDetails.enableSplash) {
-        icon = SplashWidget(
-          size: size,
-          bubblesColor: widget.splashAnimationDetails.bubblesColor,
-          animationDuration: widget.splashAnimationDetails.animationDuration,
-          circleSize: widget.splashAnimationDetails.circleSize,
-          bubblesSize: widget.splashAnimationDetails.bubblesSize,
-          child: icon,
-        );
-      }
-    } else if (widget.icon is Text) {
-      size = widget.size ?? (widget.icon as Text?)?.style?.fontSize ?? 50;
-      TextStyle textStyle =
-          (widget.icon as Text?)?.style?.copyWith(fontSize: size) ??
-              TextStyle(fontSize: size);
-      icon = DefaultTextStyle(
-        style: textStyle,
-        child: icon,
-      );
-    } else {
-      size = widget.size ?? 80;
-    }
+    // Set the icon and size
+    _adjustIconAndSize(icon, widget.splashAnimationDetails, widget.size);
 
     verticalOffset = (size / 2) + (widget.verticalOffset ?? 0);
     horizontalOffset = (size / 2) - (widget.horizontalOffset ?? 0);
@@ -306,17 +283,85 @@ class _HeartOverlayState extends State<HeartOverlay> {
     // Initialize Controller
     widget.controller?._initialize(
       size: size,
-      addItem: _addItem,
       height: widget.height,
       width: widget.width,
-      changeGesture: changeGesture,
+      addItem: _addItem,
+      changeGesture: _changeGesture,
+      changeIcon: _changeIcon,
+      clearCache: _clearCache,
+      changeChild: _changeChild,
     );
   }
 
-  void changeGesture(bool enabled) {
+  void _adjustIconAndSize(
+    Widget? givenIcon,
+    SplashAnimationDetails splashAnimationDetails,
+    double? givenSize,
+  ) {
+    // Set the size, vertical offset, and horizontal offset of the heart based on the passed-in values or defaults
+    if (givenIcon is Icon) {
+      size = givenSize ?? givenIcon.size ?? 80;
+      if (splashAnimationDetails.enableSplash) {
+        icon = SplashWidget(
+          size: size,
+          bubblesColor: splashAnimationDetails.bubblesColor,
+          animationDuration: splashAnimationDetails.animationDuration,
+          circleSize: splashAnimationDetails.circleSize,
+          bubblesSize: splashAnimationDetails.bubblesSize,
+          child: givenIcon,
+        );
+      }
+    } else if (givenIcon is Text) {
+      size = givenSize ?? givenIcon.style?.fontSize ?? 50;
+      TextStyle textStyle = givenIcon.style?.copyWith(fontSize: size) ??
+          TextStyle(fontSize: size);
+      icon = DefaultTextStyle(
+        style: textStyle,
+        child: givenIcon,
+      );
+    } else {
+      size = givenSize ?? 80;
+      icon = givenIcon ??
+          Icon(
+            Icons.favorite,
+            color: Colors.red,
+            size: size,
+          );
+    }
+  }
+
+  void _changeChild(Widget newChild) {
+    setState(() {
+      child = newChild;
+    });
+  }
+
+  void _changeIcon(
+    Widget newIcon,
+    double? newSize,
+    double? newVerticalOffset,
+    double? newHorizontalOffset,
+    SplashAnimationDetails? newSplashAnimationDetails,
+  ) {
+    setState(() {
+      newSize ??= size;
+      newSplashAnimationDetails ??= const SplashAnimationDetails(
+        enableSplash: false,
+      );
+      _adjustIconAndSize(newIcon, newSplashAnimationDetails!, newSize);
+      verticalOffset = (newSize! / 2) + (newVerticalOffset ?? 0);
+      horizontalOffset = (newSize! / 2) - (newHorizontalOffset ?? 0);
+    });
+  }
+
+  void _changeGesture(bool enabled) {
     setState(() {
       showGesture = enabled;
     });
+  }
+
+  void _clearCache() {
+    _hearts.clear();
   }
 
   /// Define a method to add new items to the screen when the user taps on it
@@ -324,7 +369,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
     // If there are already 20 items or [cacheExtent] amount of items in memory,
     // clear them out to avoid performance issues
     if (_hearts.length >= cacheExtent) {
-      _hearts.clear();
+      _clearCache();
     }
     // Add a new icon to the list of hearts on the screen
     setState(() {
@@ -401,29 +446,61 @@ class _HeartOverlayState extends State<HeartOverlay> {
 class HeartOverlayController {
   late Function(TapDownDetails tapDownDetails) _addItem;
   late Function(bool value) _changeGesture;
+  late Function(Widget child) _changeChild;
+  late Function(
+    Widget newIcon,
+    double? size,
+    double? verticalOffset,
+    double? horizontalOffset,
+    SplashAnimationDetails? splashAnimationDetails,
+  ) _changeIcon;
+  late VoidCallback _clearCache;
   late double _size;
   double? _height, _width;
 
-  /// Method used to progamatically show the icon at a desired offset
-  void showIcon({required Offset offset}) {
-    _addItem.call(
-      TapDownDetails(
-        localPosition: offset,
-      ),
-    );
-  }
+  /// Method used to progamatically show the icon at a desired offset.
+  void showIcon({required Offset offset}) => _addItem(
+        TapDownDetails(
+          localPosition: offset,
+        ),
+      );
 
-  /// Method used to get icon size
+  /// Method used to get icon size.
   double getSize() => _size;
 
-  /// Method used to get the [HeartOverlay]'s height
+  /// Method used to get the [HeartOverlay]'s height.
   double? getHeight() => _height;
 
-  /// Method used to get the [HeartOverlay]'s width
+  /// Method used to get the [HeartOverlay]'s width.
   double? getWidth() => _width;
 
-  /// Enable or disable gestures
+  /// Enable or disable gestures.
   void setGesture({required bool enabled}) => _changeGesture(enabled);
+
+  /// Method to change the background.
+  void changeChild({required Widget child}) => _changeChild(child);
+
+  /// Method to clear cache.
+  void clearCache() => _clearCache();
+
+  /// Method used to change the icon while optionally also allow changing
+  /// the vertical and horizontal offsets, size and Splash Animation Details.
+  ///
+  /// Note that: SplashAnimationDetails only work if the type of the icon is [Icon].
+  void changeIcon({
+    required Widget icon,
+    double? size,
+    double? verticalOffset,
+    double? horizontalOffset,
+    SplashAnimationDetails? splashAnimationDetails,
+  }) =>
+      _changeIcon(
+        icon,
+        size,
+        verticalOffset,
+        horizontalOffset,
+        splashAnimationDetails,
+      );
 
   /// Method that returns the center of the screen offset
   Offset getCenterScreenOffset(BuildContext context) {
@@ -435,8 +512,17 @@ class HeartOverlayController {
 
   /// Private method to link the controller to the [HeartOverlay] widget
   void _initialize({
-    required Function(TapDownDetails tapDownDetails) addItem,
-    required Function(bool value) changeGesture,
+    required void Function(TapDownDetails tapDownDetails) addItem,
+    required void Function(bool value) changeGesture,
+    required void Function(Widget child) changeChild,
+    required void Function(
+      Widget newIcon,
+      double? size,
+      double? verticalOffset,
+      double? horizontalOffset,
+      SplashAnimationDetails? splashAnimationDetails,
+    ) changeIcon,
+    required VoidCallback clearCache,
     required double size,
     required double? height,
     required double? width,
@@ -446,5 +532,8 @@ class HeartOverlayController {
     _height = height;
     _width = width;
     _changeGesture = changeGesture;
+    _changeIcon = changeIcon;
+    _clearCache = clearCache;
+    _changeChild = changeChild;
   }
 }

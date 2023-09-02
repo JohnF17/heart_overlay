@@ -1,3 +1,21 @@
+## 1.4.1
+
+* Added the following methods to the [HeartOverlayController].
+  * [changeIcon] - Method to change the icon by providing the icon and optionally the vertical and horizontal offsets, size and Splash Animation Details (which only works if the provided icon is [Icon] type).
+  * [clearCache] - Method to clear Cache.
+  * [changeChild] - Method to change the background child.
+
+[#Next]
+
+* Introduce [PauseDuration] parameter - The amount of time the icon stays on the screen before the animation starts which'll default to 0 seconds.
+* Add a new Tap Down Type called [TapDownType.doubleThenSingle] which triggers by a double tap then goes to single tap if the tap succession is within a certain amount of time like most social media apps.
+* Support for icons to be vertically spaced out when created at about the same position.
+* Add more methods to the [HeartOverlayController]
+* Add a [SplashType] or [SplashShape] to the [SplashAnimationDetails]  by creating more painters (painter contributions are very welcome 👀)
+* Introduce [DisplayType] parameter - A variable that determines preconfigured display types and also can be built via a [DisplayTypeBuilder]. The display type will default to the single icon appearing at the tap position. Although the icons will continue to shrink, move and fade, the [DisplayType] will help customize the amount of icons being displayed and the way they are displayed on screen. Here are some of the display types 
+  * [RingDisplayType(...)] - Show `x` amount of icons with `x` radius while the animated icons display on the circumference 
+  * [HeartDisplayType(...)] - Provide size `x` for the heart shape and display the animated icons all around the edges
+
 ## 1.4.0
 
 * Added support for enabling or disabling tap gestures using [enableGestures] boolean variable (Addressing issue [#2](https://github.com/JohnF17/heart_overlay/issues/2))
@@ -10,17 +28,6 @@
   * [setGesture(enabled:...)] - enable or disable tap gesture
 * Fixed a small bug where [BubblesColor] was not visible on import
 * Few refactorings
-
-[#Next]
-
-* Introduce [PauseDuration] parameter - The amount of time the icon stays on the screen before the animation starts which'll default to 0 seconds.
-* Add a new Tap Down Type called [TapDownType.doubleThenSingle] which triggers by a double tap then goes to single tap if the tap succession is within a certain amount of time like most social media apps.
-* Support for icons to be vertically spaced out when created at about the same position.
-* Add more methods to the [HeartOverlayController]
-* Add a [SplashType] or [SplashShape] to the [SplashAnimationDetails]  by creating more painters (painter contributions are very welcome 👀)
-* Introduce [DisplayType] parameter - A variable that determines preconfigured display types and also can be built via a [DisplayTypeBuilder]. The display type will default to the single icon appearing at the tap position. Although the icons will continue to shrink, move and fade, the [DisplayType] will help customize the amount of icons being displayed and the way they are displayed on screen. Here are some of the display types 
-  * [RingDisplayType(...)] - Show `x` amount of icons with `x` radius while the animated icons display on the circumference 
-  * [HeartDisplayType(...)] - Provide size `x` for the heart shape and display the animated icons all around the edges
 
 ## 1.3.0
 

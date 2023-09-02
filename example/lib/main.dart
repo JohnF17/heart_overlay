@@ -101,8 +101,17 @@ class _HeartOverlayTestWidgetState extends State<HeartOverlayTestWidget> {
 
                 // offset += centerOffset; // You can add offsets
 
+                // Show the icon at the provided offset
                 heartOverlayController.showIcon(
                   offset: offset,
+                );
+
+                // Changes to the emoji on the second click
+                heartOverlayController.changeIcon(
+                  icon: const Text('👀'), // Required
+                  size: 200, // Not required
+                  horizontalOffset: 10, // Not required
+                  verticalOffset: 30, // Not required
                 );
               },
               child: const Text('Show Icon'),
