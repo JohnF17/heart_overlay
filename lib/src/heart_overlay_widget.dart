@@ -419,27 +419,30 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTapDown: (showGesture && widget.tapDownType == TapDownType.single)
-          ? _addItem
-          : null,
-      onDoubleTapDown: (showGesture && widget.tapDownType == TapDownType.double)
-          ? _addItem
-          : null,
-      child: Container(
-        decoration: decoration,
-        width: widget.width ?? double.infinity,
-        height: widget.height ?? double.infinity,
-        child: Stack(
-          children: [
-            // Show the provided Background widget if null show nothing
-            Positioned.fill(
-              child: child,
-            ),
-            Stack(
-              children: _hearts,
-            ),
-          ],
+    return IgnorePointer(
+      ignoring: !showGesture,
+      child: GestureDetector(
+        onTapDown: (showGesture && widget.tapDownType == TapDownType.single)
+            ? _addItem
+            : null,
+        onDoubleTapDown: (showGesture && widget.tapDownType == TapDownType.double)
+            ? _addItem
+            : null,
+        child: Container(
+          decoration: decoration,
+          width: widget.width ?? double.infinity,
+          height: widget.height ?? double.infinity,
+          child: Stack(
+            children: [
+              // Show the provided Background widget if null show nothing
+              Positioned.fill(
+                child: child,
+              ),
+              Stack(
+                children: _hearts,
+              ),
+            ],
+          ),
         ),
       ),
     );
