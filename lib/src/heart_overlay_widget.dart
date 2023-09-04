@@ -387,29 +387,33 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
   /// Define a method to build an icon using an animation
   Widget _buildItem() {
-    return TweenAnimationBuilder<double>(
-      // The Tween defines the range of the animation. Here, it goes from 1 to 0, which means the animation will
-      // start with the size of the icon being 100% and end with 0%, meaning the icon will disappear.
-      tween: Tween(begin: 1, end: 0),
-      duration: widget.duration,
-      // The child widget to animate. If none is provided, an [Icon] with the favorite icon and a red color will be used.
-      child: icon,
-      builder: (BuildContext context, double value, Widget? child) {
-        // The offset of the transformed widget. It moves the icon icon up as it becomes smaller.
-        final offset = Offset(0, (100 * value) - (verticalOffset * 2));
+    return IgnorePointer(
+      ignoringSemantics: true,
+      ignoring: true,
+      child: TweenAnimationBuilder<double>(
+        // The Tween defines the range of the animation. Here, it goes from 1 to 0, which means the animation will
+        // start with the size of the icon being 100% and end with 0%, meaning the icon will disappear.
+        tween: Tween(begin: 1, end: 0),
+        duration: widget.duration,
+        // The child widget to animate. If none is provided, an [Icon] with the favorite icon and a red color will be used.
+        child: icon,
+        builder: (BuildContext context, double value, Widget? child) {
+          // The offset of the transformed widget. It moves the icon icon up as it becomes smaller.
+          final offset = Offset(0, (100 * value) - (verticalOffset * 2));
 
-        return Transform.translate(
-          offset: offset,
-          // The Opacity widget fades out the icon as it becomes smaller.
-          child: Opacity(
-            opacity: value,
-            child: Transform.scale(
-              scale: value,
-              child: child,
+          return Transform.translate(
+            offset: offset,
+            // The Opacity widget fades out the icon as it becomes smaller.
+            child: Opacity(
+              opacity: value,
+              child: Transform.scale(
+                scale: value,
+                child: child,
+              ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
