@@ -142,6 +142,8 @@ class HeartOverlay extends StatefulWidget {
   final Widget? backgroundWidget;
 
   /// A widget to be used as the background for the overlay.
+  ///
+  /// This widget is placed under the [HeartOverlay] icon animations.
   final Widget? child;
 
   /// Duration of the [icon] animation to stay on the screen.
@@ -231,7 +233,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
   late Widget child;
   late int cacheExtent;
   late Widget icon;
-  late bool showGesture;
+  late bool enableGesture;
 
   List<Widget> _hearts = [];
 
@@ -275,7 +277,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
     cacheExtent = widget.cacheExtent ?? 20;
 
     // Set gesture
-    showGesture = widget.enableGestures;
+    enableGesture = widget.enableGestures;
 
     // Set the child
     child = widget.child ?? widget.backgroundWidget ?? const SizedBox.shrink();
@@ -356,7 +358,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
   void _changeGesture(bool enabled) {
     setState(() {
-      showGesture = enabled;
+      enableGesture = enabled;
     });
   }
 
@@ -419,31 +421,33 @@ class _HeartOverlayState extends State<HeartOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      ignoring: !showGesture,
-      child: GestureDetector(
-        onTapDown: (showGesture && widget.tapDownType == TapDownType.single)
-            ? _addItem
-            : null,
-        onDoubleTapDown: (showGesture && widget.tapDownType == TapDownType.double)
-            ? _addItem
-            : null,
-        child: Container(
-          decoration: decoration,
-          width: widget.width ?? double.infinity,
-          height: widget.height ?? double.infinity,
-          child: Stack(
-            children: [
-              // Show the provided Background widget if null show nothing
-              Positioned.fill(
-                child: child,
-              ),
-              Stack(
+    return Container(
+      decoration: decoration,
+      width: widget.width ?? double.infinity,
+      height: widget.height ?? double.infinity,
+      child: Stack(
+        children: [
+          // Show the provided Background widget if null show nothing
+          Positioned.fill(
+            child: child,
+          ),
+          IgnorePointer(
+            ignoring: !enableGesture,
+            child: GestureDetector(
+              onTapDown:
+                  (enableGesture && widget.tapDownType == TapDownType.single)
+                      ? _addItem
+                      : null,
+              onDoubleTapDown:
+                  (enableGesture && widget.tapDownType == TapDownType.double)
+                      ? _addItem
+                      : null,
+              child: Stack(
                 children: _hearts,
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
