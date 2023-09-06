@@ -235,7 +235,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
   late Widget icon;
   late bool enableGesture;
 
-  List<Widget> _hearts = [];
+  List<Widget> _icons = [];
 
   @override
   void initState() {
@@ -363,27 +363,28 @@ class _HeartOverlayState extends State<HeartOverlay> {
   }
 
   void _clearCache() {
-    _hearts.clear();
+    _icons.clear();
   }
 
   /// Define a method to add new items to the screen when the user taps on it
   void _addItem(TapDownDetails details) {
     // If there are already 20 items or [cacheExtent] amount of items in memory,
     // clear them out to avoid performance issues
-    if (_hearts.length >= cacheExtent) {
+    if (_icons.length >= cacheExtent) {
       _clearCache();
     }
     // Add a new icon to the list of hearts on the screen
     setState(() {
-      _hearts = List.from(_hearts)
+      _icons = List.from(_icons)
         ..add(
           Positioned(
+            key: UniqueKey(),
             left: details.localPosition.dx - horizontalOffset,
             top: details.localPosition.dy - verticalOffset,
             child: _buildItem(),
           ),
         );
-      widget.onPressed?.call(_hearts.length);
+      widget.onPressed?.call(_icons.length);
     });
   }
 
@@ -427,13 +428,14 @@ class _HeartOverlayState extends State<HeartOverlay> {
       height: widget.height ?? double.infinity,
       child: Stack(
         children: [
-          // Show the provided Background widget if null show nothing
+          // Show the provided Background widget, if null show nothing
           Positioned.fill(
             child: child,
           ),
           IgnorePointer(
             ignoring: !enableGesture,
             child: GestureDetector(
+              behavior: HitTestBehavior.translucent,
               onTapDown:
                   (enableGesture && widget.tapDownType == TapDownType.single)
                       ? _addItem
@@ -443,7 +445,7 @@ class _HeartOverlayState extends State<HeartOverlay> {
                       ? _addItem
                       : null,
               child: Stack(
-                children: _hearts,
+                children: _icons,
               ),
             ),
           ),

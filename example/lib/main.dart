@@ -70,6 +70,26 @@ class _HeartOverlayTestWidgetState extends State<HeartOverlayTestWidget> {
               onPressed: (numberOfHearts) {
                 // Do something with the number of hearts or do something whenever the icon appears
               },
+              child: Center(
+                child: ElevatedButton(
+                  child: const Text('h'),
+                  onPressed: () {
+                    debugPrint(
+                      ''' The following condition applies to all children that receive tap events within the HeartOverlay's `child`
+If enablegestures is true 
+- Tap events in the child only work if the `tapdowntype` is double else they might not
+- And when tapdowntype is set to double and the child's callback works well, 
+it might feel a bit delayed or slow but that's not performance issue at all but 
+rather flutter's gesturedetector widget having a 300ms delay waiting on the double 
+tapdown before letting other callbacks work, you can 
+visit the issue https://github.com/flutter/flutter/issues/106170
+
+If enableGestures is false 
+- Tap events within the child will work as normal''',
+                    );
+                  },
+                ),
+              ),
             ),
           ),
           Padding(
